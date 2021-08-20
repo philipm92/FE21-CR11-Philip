@@ -1,0 +1,73 @@
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+  margin: auto;
+  margin-top: 1rem;
+  width: 90%;
+}
+
+td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+tr {
+  text-align: center;
+}
+
+.img-thumbnail {
+  width: 100% !important;
+  height: auto !important;
+}
+
+i {
+  font-size: 1.2rem;
+}
+
+.img-square {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+.table-width {
+  max-width: 100%;
+}
+
+.manageProduct {
+  margin: auto;
+}
+
+.userImage {
+  width: 100px !important;
+  height: auto !important;
+}
+
+.hero {
+  background: #020028;
+  background: linear-gradient(30deg, #020028 0%, #00d4ff 100%);
+}
+
+@media screen and (min-width: 768px) {
+  i {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .img-thumbnail {
+    width: 25% !important;
+    height: auto !important;
+  }
+  .table-width {
+    max-width: 90%;
+  }
+}
+/*# sourceMappingURL=style.css.map */
