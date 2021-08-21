@@ -53,7 +53,7 @@ if ($_POST) {
             <div class="alert alert-<?php echo $class; ?>" role="alert">
                 <p><?php echo ($message) ?? ''; ?></p>
                 <!-- <a href='../adopt.php?id=<?=$id;?>'><button class="btn btn-warning" type='button'><i class="fas fa-hand-point-left"></i></button></a> -->
-                <a href='../index.php'><button class="btn btn-success" type='button'><i class="fas fa-home"></i></button></a>
+                <a href='../../index.php'><button class="btn btn-warning" type='button'><i class="fas fa-home"></i></button></a>
             </div>
         </div>
     </body>

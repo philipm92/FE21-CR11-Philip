@@ -50,7 +50,7 @@ function CreateTableOverview($sql) {
     
             $tbody .= "<td><span class='m-0 btn btn-warning' data-bs-toggle='modal' data-bs-target='#".$unique_modalID."'><i class='fas fa-info-circle'></td></span></td>";
             
-            $additional_info = $db->query("SELECT hobbies, breed FROM $TABLE WHERE id=?", array($row["id"]))->fetchArray();
+            $additional_info = $db->query("SELECT status, hobbies, breed FROM $TABLE WHERE id=?", array($row["id"]))->fetchArray();
             $modal_info_str = "
             <div class='card'>
                 <img class='card-img-top' src='pictures/" .$row["picture"]."' alt='".$row["name"]."' />
@@ -89,7 +89,8 @@ function CreateTableOverview($sql) {
             ";
     
             // adopt button
-            $tbody .= "<td><a href='adopt.php?id=".$row['id']."&user=".$_SESSION['user']."'><button type='button' class='btn btn-primary'>Take me home</button></a></td>";
+            if ($additional_info["status"] == "free") $tbody .= "<td><a href='adopt.php?id=".$row['id']."&user=".$_SESSION['user']."'><button type='button' class='btn btn-primary'>Take me home</button></a></td>";
+            else $tbody .= "<td><em class='text-muted'>Has been adopted</em></td>";
 
             $tbody .= "</tr>"; 
             $first = FALSE;

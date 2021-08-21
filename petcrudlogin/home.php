@@ -42,7 +42,7 @@ if ($n > 0) {
         // if ($row["id"]) continue;
         $tbody .= "<tr>"; 
         foreach ($row as $key => $value) {
-            if ($key == "id") $hotel_id = (int)$value;
+            if ($key == "id") $animal_id = (int)$value;
             if ($key == "id" || $key == "status") {
                 continue;
             }
@@ -53,10 +53,10 @@ if ($n > 0) {
             else $tbody .= "<td>$value</td>";
         }
 
-        if (isset($hotel_id)) {
+        if (isset($animal_id)) {
             $tbody .= "
                     <td>
-                    <a href='products/cancel.php?id=".$hotel_id."'><button class='btn btn-danger btn-sm' type='button'>Return</button></a>
+                    <a href='home.php?cancel_adoption=".$animal_id."'><button class='btn btn-danger btn-sm' type='button'>Return</button></a>
                     </td>";
         }
        
@@ -66,6 +66,19 @@ if ($n > 0) {
     };
 } else {
     $tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Animals Adopted So Far!</center></td></tr>";
+}
+
+// Cancel Adoption
+if (isset($_GET["cancel_adoption"])) {
+    $id = (int)$_GET["cancel_adoption"];
+    // delete connection from adoption table
+    $db->query("DELETE FROM `pet_adoption` WHERE `fk_animal_id` = ?", array($id));
+
+    // set animal free to adopt
+    $db->query("UPDATE $TABLE SET `status`=? WHERE id = ?", array("free", $id));
+    $successTyp = "success";
+    $successMSG = "Adoption was Successfully cancel.";
+    header("refresh:1;url=home.php");    
 }
 
 // select logged-in users details - procedural style
@@ -94,7 +107,11 @@ $db->close();
         <a href="update.php?id=<?php echo $_SESSION['user'] ?>">Update your profile</a>
         <a href="animals/index.php">Adopt a pet</a>
     </p>
-
+    <?php if (isset($successMSG)) { ?>
+        <div class="alert alert-<?php echo $successTyp ?>" >
+            <p><?php echo $successMSG; ?></p>
+        </div>
+    <?php } ?>
     <p class='h2 text-center'>Your adopted animals!</p>
     <div class="table-responsive mx-auto table-width">
         <table class='table table-hover table-striped'
