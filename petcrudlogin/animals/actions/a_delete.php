@@ -38,7 +38,8 @@ if ($_POST) {
         <meta charset="UTF-8">
         <title>Delete</title>
         <?php require_once '../../components/bootcss.php'?>  
-        <link href="../../components/style.css" rel="stylesheet"> 
+        <link href="../../components/style.css" rel="stylesheet">
+        <link href="../../components/style.css" rel="stylesheet">
     </head>
     <body>
         <div class="container">

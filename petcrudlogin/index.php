@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'components/db_connect.php';
+$_SESSION["TABLE"] = "animals";
 
 // it will never let you open index(login) page if session is set
 if (isset($_SESSION['user']) != "") {
@@ -11,9 +12,9 @@ if (isset($_SESSION['adm']) != "") {
     header("Location: dashboard.php"); // redirects to home.php
 }
 
+
 $error = false;
 $email = $password = $emailError = $passError = '';
-
 if (isset($_POST['btn-login'])) {
 
     // prevent sql injections/ clear user invalid inputs

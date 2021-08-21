@@ -7,135 +7,113 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$_SESSION["TABLE"] = "animals";
+// $_SESSION["TABLE"] = "animals";
 $TABLE = $_SESSION["TABLE"];
 
-// automize generating of the table head
-$thead = ""; // get the column names from the hotel room db-table
-$num_tab_col = 2; // paying homage
+// $a = new stdClass();
+// $c = "c";
+// $d = "d";
+// $a->head = array($c => $d, $d => $c);
+// $a->body = array($c => $d, $d => $c);
+// foreach($a->head as $k=>$v) echo $k." ".$v."<br />";
+// foreach($a->body as $k=>$v) echo $k." ".$v."<br />";
 
-// $sql = "SHOW COLUMNS FROM $TABLE";
-// $result = $db->query($sql);
-// $num_tab_col = 1; // paying homage
-// foreach ($result->fetchAll() as $row) {
-//     if ($row["Field"] == "id") continue;
-//     #$change_an = ($row["Field"] == "picture") ? "style='text-align:left;'" : '';
-//     $thead .= "<th>".ucfirst($row["Field"])."</th>";
-//     $num_tab_col++;
-// }
-// $thead .= "<th>Action</th>";
+function CreateTableOverview($sql) {
+    global $db;
+    global $filesAllowed;
+    global $TABLE;
+    $result = $db->query($sql);
+    $tbody = ''; //this variable will hold the body for the table
+    $thead = ''; // get the column names from the hotel room db-table
+    $num_tab_col = 2; // paying homage
+    $first = TRUE;
+    if ($result->numRows() > 0) {   
+        foreach ($result->fetchAll() as $row) {
+            $tbody .= "<tr>"; 
+            foreach ($row as $key => $value) {
+                if ($key == "id") {
+                    $tbody .= "</tr>";
+                    continue;
+                }
+                if ($first) {
+                    $thead .= "<th>".ucfirst($key)."</th>";
+                    $num_tab_col++;
+                }
+                $fileExtension = strtolower(pathinfo($value,PATHINFO_EXTENSION));
+                if (in_array($fileExtension, $filesAllowed)) $tbody .= "<td><img class='img-thumbnail' src='pictures/" .$value."' alt='".$row["name"]."' /></td>";
+                elseif ($value == "adopted") $tbody .= "<td colspan='2' class='text-muted'><em>not available</em></td>";
+                else $tbody .= "<td>$value</td>";
+            }
+            // build modal trigger button
+            $unique_modalID = $row["name"].$row["id"].$row["age"];
+            $unique_modalID = preg_replace("/\s+/", '_', $unique_modalID); //replace any space with "_"
+    
+            $tbody .= "<td><span class='m-0 btn btn-warning' data-bs-toggle='modal' data-bs-target='#".$unique_modalID."'><i class='fas fa-info-circle'></td></span></td>";
+            
+            $additional_info = $db->query("SELECT hobbies, breed FROM $TABLE WHERE id=?", array($row["id"]))->fetchArray();
+            $modal_info_str = "
+            <div class='card'>
+                <img class='card-img-top' src='pictures/" .$row["picture"]."' alt='".$row["name"]."' />
+                <div class='card-body pb-0'>
+                    <h5 class='card-title text-center'>".$row["name"]."</h5>
+                    <q class='card-text'><em>".$row["description"]."</em></q>
+                    <p class='card-text'><strong>Hobbies: </strong>".$additional_info["hobbies"]."</p>
+                    <p class='card-text mb-1'><strong>Location: </strong>".$row["location"]."</p>
+                </div>
+                <div class='card-footer d-flex flex-row justify-content-between'>
+                    <p class='text-muted'><strong>Age: </strong>".$row["age"]."</p>
+                    <p class='text-muted'><strong>Size: </strong>".$row["size"]."</p>
+                    <p class='text-muted'><strong>Breed: </strong>".$additional_info["breed"]."</p>
+                </div>
+            </div>        
+            ";
+    
+            // build modal window
+            $tbody .= "
+            <div class='modal fade' id='".$unique_modalID."' tabindex='-1' aria-labelledby='".$unique_modalID."Label' aria-hidden='true'>
+            <div class='modal-dialog'>
+              <div class='modal-content'>
+                <div class='modal-header'>
+                  <h5 class='modal-title text-center' id='".$unique_modalID."Label'>".$row["name"]."</h5>
+                  <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                </div>
+                <div class='modal-body'>
+                  ".$modal_info_str."
+                </div>
+                <div class='modal-footer my-0 mx-auto'>
+                  <a href='adopt.php?id=".$row['id']."&user=".$_SESSION['user']."'><button type='button' class='btn btn-primary'>Take me home</button></a>
+                </div>
+              </div>
+            </div>
+            </div>                  
+            ";
+    
+            // adopt button
+            $tbody .= "<td><a href='adopt.php?id=".$row['id']."&user=".$_SESSION['user']."'><button type='button' class='btn btn-primary'>Take me home</button></a></td>";
 
-$sql = "SELECT id, name, picture, description, age FROM $TABLE";
-$result = $db->query($sql);
-$tbody = ''; //this variable will hold the body for the table
-$first = TRUE;
-if ($result->numRows() > 0) {   
-    foreach ($result->fetchAll() as $row) {
-        $tbody .= "<tr>"; 
-        foreach ($row as $key => $value) {
-            if ($key == "id") {
-                $tbody .= "</tr>";
-                continue;
-            }
-            if ($first) {
-                $thead .= "<th>".ucfirst($key)."</th>";
-                $num_tab_col++;
-            }
-            $fileExtension = strtolower(pathinfo($value,PATHINFO_EXTENSION));
-            if (in_array($fileExtension, $filesAllowed)) $tbody .= "<td><img class='img-thumbnail' src='pictures/" .$value."' /></td>";
-            elseif ($value == "adopted") $tbody .= "<td colspan='2' class='text-muted'><em>not available</em></td>";
-            else $tbody .= "<td>$value</td>";
+            $tbody .= "</tr>"; 
+            $first = FALSE;
         }
-        // build modal trigger button
-        $unique_modalID = $row["name"]."_".$_SESSION['user'];
-        $tbody .= "<td><span class='m-0 btn btn-warning' data-bs-toggle='modal' data-bs-target='#".$unique_modalID."'><i class='fas fa-info-circle'></td></span></td>";
-        
-        $modal_info_str = '';
-
-        // build modal window
-        $tbody .= "
-        <div class='modal fade' id='".$unique_modalID."' tabindex='-1' aria-labelledby='".$unique_modalID."Label' aria-hidden='true'>
-        <div class='modal-dialog'>
-          <div class='modal-content'>
-            <div class='modal-header'>
-              <h5 class='modal-title text-center' id='".$unique_modalID."Label'>".$row["name"]."</h5>
-              <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div class='modal-body'>
-              ".$modal_info_str."
-            </div>
-            <div class='modal-footer my-0 mx-auto'>
-              <a href='$TABLE/adopt.php?id=$row[id]'><button type='button' class='btn btn-warning'>Adopt</button></a>
-            </div>
-          </div>
-        </div>
-        </div>                  
-        ";       
-
-        $tbody .= "</tr>"; 
-        $first = FALSE;
+        $tbody = str_replace("<tr></tr>", '', $tbody);
+        $thead .= "<th>More</th>";
+        $thead .= "<th>Adopt</th>";
+    } else {
+        $tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Data Available </center></td></tr>";
     }
-    $tbody = str_replace("<tr></tr>", '', $tbody);
-    $thead .= "<th>More</th>";
-    $thead .= "<th>Adopt</th>";
-} else {
-    $tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Data Available </center></td></tr>";
+    return array($thead, $tbody);
 }
 
-// $book_string = "<td>-</td>";
-// $qry = "SELECT hotel.id as 'hotel_id', hotel.description, hotel.room as 'room', hotel.floor, booking.date as 'booking_date', hotel.picture as 'room_image', user.id FROM user JOIN booking ON booking.fk_user_id = user.id JOIN hotel ON hotel.id = booking.fk_hotel_id WHERE user.status != 'adm' AND user.id = $row[id];";
-// $res = $db->query($qry);
-
-// if ($res->numRows() > 0) {
-//     foreach ($res->fetchAll() as $booking) {
-//         $unique_modalID = $booking["room"]."_".$row["id"];
-//         $unique_modalID = preg_replace("/\s+/", '_', $unique_modalID);
-//         #echo $unique_modalID."<br />";
-//         $modal_table_str = "
-//         <table class='table d-flex justify-content-center'>
-//             <tr>
-//                 <img class='m-1 img-thumbnail rounded-circle' src='products/pictures/$booking[room_image]' alt='$booking[room]'>
-//             </tr>
-//             <tr>
-//                 <th>Floor</th>
-//                 <td>$booking[floor]</td>
-//             </tr>
-//             <tr>
-//                 <th>Description</th>
-//                 <td>$booking[description]</td>
-//             </tr>                                                            
-//             <tr>
-//                 <th>Booked for</th>
-//                 <td>$booking[booking_date]</td>
-//             </tr>
-//         </table>                
-//         ";
-
-//         // build modal trigger button
-//         $book_string .= "<p><span class='m-0 btn btn-warning' data-bs-toggle='modal' data-bs-target='#".$unique_modalID."'>".$booking["room"]."</span></p>";
-//         // build modal window
-//         $book_string .= "
-//         <div class='modal fade' id='".$unique_modalID."' tabindex='-1' aria-labelledby='".$unique_modalID."Label' aria-hidden='true'>
-//         <div class='modal-dialog'>
-//           <div class='modal-content'>
-//             <div class='modal-header'>
-//               <h5 class='modal-title text-center' id='".$unique_modalID."Label'>".$booking["room"]."</h5>
-//               <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-//             </div>
-//             <div class='modal-body'>
-//               ".$modal_table_str."
-//             </div>
-//             <div class='modal-footer my-0 mx-auto'>
-//               <a href='products/update.php?id=$booking[hotel_id]'><button type='button' class='btn btn-warning'>Make changes</button></a>
-//             </div>
-//           </div>
-//         </div>
-//         </div>                  
-//         ";
-//     }
-// } else $book_string .= "-";
-
-// $book_string .= "</td>";
+$show_all_btn = '';
+if (isset($_GET["senior_age"])) {   
+    $sql = "SELECT id, name, picture, description, age, location, size FROM $TABLE WHERE age>=8 ORDER BY size, name;";
+    list($thead, $tbody) = CreateTableOverview($sql);
+    $show_all_btn = "<a href='index.php?showall=1'><button type='button' class='btn btn-secondary'>Show all</button>
+</a>";
+} //elseif (isset($_GET["showall"])) list($thead, $tbody) = CreateTableOverview($sql);
+else {
+    $sql = "SELECT id, name, picture, description, age, location, size FROM $TABLE ORDER BY size, name;";
+    list($thead, $tbody) = CreateTableOverview($sql);
+}
 
 
 $db->close();
@@ -152,13 +130,14 @@ $db->close();
     </head>
 <body>
     <div class="container-fluid my-3">    
-        <div class='mb-3'>
-            <?php if (isset($_SESSION['adm'])) { ?>
-            <a href= "create.php"><button class='btn btn-primary'type="button" >Add Animal</button></a>
-            <?php } ?>
+        <div class='mb-3 d-flex flex-row justify-content-evenly'>
+            <h2 class="text-center">Pets for Adoption</h2>
+            <a href="index.php?senior_age=1">
+                <button type='button' class='btn btn-secondary'>Sort Seniors</button>
+            </a>
+            <?php echo $show_all_btn ?>            
         </div>
-        <h2 class="text-center">Pets for Adoption</h2>
-        <div class="table-responsive mx-auto w-75">
+        <div class="table-responsive mx-auto table-width">
             <table class='table table-hover table-striped'>
                 <thead class='table-success'>
                     <tr>

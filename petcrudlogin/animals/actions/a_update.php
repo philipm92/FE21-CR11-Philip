@@ -37,21 +37,15 @@ if ($_POST) {
         $sql = "UPDATE `animals` SET `name`=?,`location`=?,`description`=?,`size`=?,`age`=?,`hobbies`=?,`breed`=?,`status`=? WHERE id = {$id}";
         $db->query($sql, array($name, $location, $description, $size, $age, $hobbies, $breed, $status));
     }
-    #echo $sql; 
 
     // check for status and delete entry accordingly
-    if ($_POST["old_status"] == "booked" && $status == "available") $db->query("DELETE FROM booking WHERE `fk_hotel_id` = {$id}");
+    if ($_POST["old_status"] == "adopted" && $status == "free") $db->query("DELETE FROM `pet_adoption` WHERE `fk_animal_id` = ?", array($id));
 
-    if (1) {
-        $class = "success";
-        $message = "The record was successfully updated";
-        $uploadError = ($picture->error !=0)? $picture->ErrorMessage :'';
-    } 
-    // else {
-    //     $class = "danger";
-    //     $message = "Error while updating record : <br>" . mysqli_connect_error();
-    //     $uploadError = ($picture->error !=0)? $picture->ErrorMessage :'';
-    // }
+    
+    $class = "success";
+    $message = "The record was successfully updated";
+    $uploadError = ($picture->error !=0)? $picture->ErrorMessage :'';
+
     $db->close();   
 } else {
     header("location: ../error.php");
@@ -65,6 +59,7 @@ if ($_POST) {
         <title>Update</title>
         <?php require_once '../../components/bootcss.php'?>
         <link href="../../components/style.css" rel="stylesheet">
+        <link href="../../components/style.css" rel="stylesheet">
     </head>
     <body>
         <div class="container">
@@ -74,8 +69,8 @@ if ($_POST) {
             <div class="alert alert-<?php echo $class;?>" role="alert">
                 <p><?php echo ($message) ?? ''; ?></p>
                 <p><?php echo ($uploadError) ?? ''; ?></p>
-                <a href='../update.php?id=<?=$id;?>'><button class="btn btn-warning" type='button'>Back</button></a>
-                <a href='../../home.php'><button class="btn btn-success" type='button'>Home</button></a>
+                <a href='../update.php?id=<?=$id;?>'><button class="btn btn-warning" type='button'><i class="fas fa-hand-point-left"></i></button></a>
+                <a href='../../home.php'><button class="btn btn-success" type='button'><i class="fas fa-home"></i></button></a>
             </div>
         </div>
     </body>

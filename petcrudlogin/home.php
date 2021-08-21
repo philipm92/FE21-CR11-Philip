@@ -27,47 +27,47 @@ foreach ($result->fetchAll() as $row) {
 $thead .= "<th>Action</th>";
 
 $tbody = "";
-// fill table with adopted animals
-// $sql = "SELECT $TABLE.*
-// FROM user 
-// JOIN booking ON booking.fk_user_id = user.id
-// JOIN $TABLE ON $TABLE.id = booking.fk_hotel_id
-// WHERE user.id = ? ORDER BY $TABLE.name;";
+# fill table with adopted animals
+$sql = "SELECT $TABLE.*
+FROM `user`
+JOIN `pet_adoption` ON `pet_adoption`.`fk_user_id` = `user`.`id`
+JOIN $TABLE ON $TABLE.`id` = `pet_adoption`.`fk_animal_id`
+WHERE `user`.`id` = ? ORDER BY $TABLE.`size`, $TABLE.`name`;";
 
-// $result = $db->query($sql, array($_SESSION["user"]));
-// $tbody = ''; //this variable will hold the body for the table
-// $n = $result->numRows();
-// if ($n > 0) {   
-//     foreach ($result->fetchAll() as $row) {
-//         // if ($row["id"]) continue;
-//         $tbody .= "<tr>"; 
-//         foreach ($row as $key => $value) {
-//             if ($key == "id") $hotel_id = (int)$value;
-//             if ($key == "id" || $key == "status") {
-//                 continue;
-//             }
-//             $fileExtension = strtolower(pathinfo($value,PATHINFO_EXTENSION));
-//             if (in_array($fileExtension, $filesAllowed)) $tbody .= "<td><img class='img-flud img-thumbnail' src='products/pictures/" .$value."' /></td>";
-//             elseif ($key == "duration") $tbody .= "<td>" .$value." week".(($value > 1 ? 's' : ''))."</td>";
-//             elseif ($key == "price") $tbody .= "<td>" .$value."&euro;</td>";
-//             else $tbody .= "<td>$value</td>";
-//         }
+$result = $db->query($sql, array($_SESSION["user"]));
+$tbody = ''; //this variable will hold the body for the table
+$n = $result->numRows();
+if ($n > 0) {   
+    foreach ($result->fetchAll() as $row) {
+        // if ($row["id"]) continue;
+        $tbody .= "<tr>"; 
+        foreach ($row as $key => $value) {
+            if ($key == "id") $hotel_id = (int)$value;
+            if ($key == "id" || $key == "status") {
+                continue;
+            }
+            $fileExtension = strtolower(pathinfo($value,PATHINFO_EXTENSION));
+            if (in_array($fileExtension, $filesAllowed)) $tbody .= "<td><img class='img-flud img-thumbnail' src='animals/pictures/" .$value."' /></td>";
+            elseif ($key == "duration") $tbody .= "<td>" .$value." week".(($value > 1 ? 's' : ''))."</td>";
+            elseif ($key == "price") $tbody .= "<td>" .$value."&euro;</td>";
+            else $tbody .= "<td>$value</td>";
+        }
 
-//         if (isset($hotel_id)) {
-//             $tbody .= "
-//                     <td>
-//                     <a href='products/cancel.php?id=".$hotel_id."'><button class='btn btn-danger btn-sm' type='button'>Cancel</button></a>
-//                     </td>";
-//         }
+        if (isset($hotel_id)) {
+            $tbody .= "
+                    <td>
+                    <a href='products/cancel.php?id=".$hotel_id."'><button class='btn btn-danger btn-sm' type='button'>Return</button></a>
+                    </td>";
+        }
        
-//         $tbody .= "</tr>"; 
-//         // delete empty table rows
-//         $tbody = str_replace("<tr><tr>", '', $tbody);
-//     };
-// } else {
-//     $tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Rooms Booked So Far!</center></td></tr>";
-// }
-$tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Animals Adopted So Far!</center></td></tr>";
+        $tbody .= "</tr>"; 
+        // delete empty table rows
+        $tbody = str_replace("<tr><tr>", '', $tbody);
+    };
+} else {
+    $tbody =  "<tr><td colspan='".$num_tab_col."'><center>No Animals Adopted So Far!</center></td></tr>";
+}
+
 // select logged-in users details - procedural style
 $res = $db->query("SELECT * FROM user WHERE id=?", array($_SESSION['user']));
 $row = $res->fetchArray();
@@ -96,16 +96,18 @@ $db->close();
     </p>
 
     <p class='h2 text-center'>Your adopted animals!</p>
-    <table class='table table-striped'>
-        <thead class='table-success'>
-            <tr>
-                <?= $thead; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?= $tbody; ?>
-        </tbody>
-    </table>
+    <div class="table-responsive mx-auto table-width">
+        <table class='table table-hover table-striped'
+            <thead class='table-success'>
+                <tr>
+                    <?= $thead; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?= $tbody; ?>
+            </tbody>
+        </table>
+    </div>
     
 </div>
 <?php require_once "components/bootjs.php" ?>

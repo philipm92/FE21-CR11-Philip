@@ -107,7 +107,7 @@ if ($_GET['id']) {
                             <input type= "hidden" name="picture" value= "<?php echo $data['picture'] ?>" />
                             <input type= "hidden" name= "old_status" value= "<?php echo $data['status'] ?>" />
                             <td><button class="btn btn-success" type= "submit"><i class="fas fa-save"></i></button></td>
-                            <td><a href= "../home.php"><button class="btn btn-warning" type="button">Back</button></a></td>
+                            <td><a href= "../home.php"><button class="btn btn-warning" type="button"><i class="fas fa-hand-point-left"></i></button></a></td>
                         </tr>
                     </table>
                 </div>
