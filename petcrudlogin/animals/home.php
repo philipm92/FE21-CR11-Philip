@@ -106,9 +106,9 @@ function CreateTableOverview($sql) {
 
 $show_all_btn = '';
 if (isset($_GET["senior_age"])) {   
-    $sql = "SELECT id, name, picture, description, age, location, size FROM $TABLE WHERE age>=8 ORDER BY size, name;";
+    $sql = "SELECT id, name, picture, description, age, location, size FROM $TABLE WHERE age > 8 ORDER BY size, name;";
     list($thead, $tbody) = CreateTableOverview($sql);
-    $show_all_btn = "<a href='index.php?showall=1'><button type='button' class='btn btn-secondary'>Show all</button>
+    $show_all_btn = "<a href='home.php?showall=1'><button type='button' class='btn btn-secondary'>Show all</button>
 </a>";
 } //elseif (isset($_GET["showall"])) list($thead, $tbody) = CreateTableOverview($sql);
 else {
@@ -133,7 +133,7 @@ $db->close();
     <div class="container-fluid my-3">    
         <div class='mb-3 d-flex flex-row justify-content-evenly'>
             <h2 class="text-center">Pets for Adoption</h2>
-            <a href="index.php?senior_age=1">
+            <a href="home.php?senior_age=1">
                 <button type='button' class='btn btn-secondary'>Sort Seniors</button>
             </a>
             <?php echo $show_all_btn ?>            

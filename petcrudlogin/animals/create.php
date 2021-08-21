@@ -162,7 +162,7 @@ if (isset($_POST['btn-add-pet'])) {
                         <tr>
                             <th>Hobbies</th>
                             <td>
-                                <input class="form-control" type="text"  name="hobbies" placeholder ="Description" />
+                                <input class="form-control" type="text"  name="hobbies" placeholder ="Hobbies" />
                                 <span class="text-danger"> <?php echo $hobbiesError; ?></span>
                             </td>
                         </tr>    

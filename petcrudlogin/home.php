@@ -105,7 +105,7 @@ $db->close();
     <p class="my-2">
         <a href="logout.php?logout">Sign Out</a>
         <a href="update.php?id=<?php echo $_SESSION['user'] ?>">Update your profile</a>
-        <a href="animals/index.php">Adopt a pet</a>
+        <a href="animals/home.php">Adopt a pet</a>
     </p>
     <?php if (isset($successMSG)) { ?>
         <div class="alert alert-<?php echo $successTyp ?>" >

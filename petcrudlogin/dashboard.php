@@ -85,7 +85,7 @@ $db->close();
             <a href="logout.php?logout">Sign Out</a>
             <!-- <a href="animals/index.php">Pets Overview</a> -->
         </div>
-        <div class="col-8 mt-2">
+        <div class="col-10 mt-2">
             <div class="d-flex flex-row justify-content-evenly">
                 <h2 class='text-center'>Edit Animals</h2>
                 <a href= "animals/create.php"><button class='btn btn-primary'type="button" >Add Animal</button></a>

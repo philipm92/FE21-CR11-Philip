@@ -16,7 +16,7 @@ require_once '../../components/db_connect.php';
 $TABLE = $_SESSION["TABLE"];
 if ($_POST) {
     $id = $_POST['id'];
-    echo $picture = $_POST['picture'];
+    $picture = $_POST['picture'];
     ($picture =="animal.png")?: unlink("../pictures/$picture");
 
     # run query
